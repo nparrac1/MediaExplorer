@@ -1,3 +1,18 @@
 <resources>
-    <string name="app_name">MediaExplorer</string>
+    <string name="app_name">MediaExplore</string>
+    <string name="new_category">Nueva Categoría</string>
+    <string name="add_category">Agregar categoría</string>
+    <string name="name_category">Nombre de la categoría</string>
+    <string name="name_error">El nombre no puede estar vacío</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="back">Volver</string>
+    <string name="title">Título</string>
+    <string name="description">Descripción</string>
+    <string name="add_content">Agregar contenido</string>
+    <string name="registered_content">Contenidos registrados</string>
+    <string name="movies">Peliculas</string>
+    <string name="series">Series</string>
+    <string name="anime">Anime</string>
+
 </resources>
