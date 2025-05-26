@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MediaExplore</string>
+    <string name="app_name">LessFlix</string>
     <string name="new_category">Nueva Categoría</string>
     <string name="add_category">Agregar categoría</string>
     <string name="name_category">Nombre de la categoría</string>
