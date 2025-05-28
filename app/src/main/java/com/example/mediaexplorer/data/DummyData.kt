@@ -1,10 +1,26 @@
 package com.example.mediaexplorer.data
 
 import com.example.mediaexplorer.model.Category
-import com.example.mediaexplorer.R
 
-val sampleCategories = listOf(
-    Category("1", "Películas", R.drawable.peliculas),
-    Category("2", "Series", R.drawable.series),
-    Category("3", "Animes", R.drawable.anime)
-)
+object DummyData {
+    val categories = listOf(
+        Category(
+            id = "1",
+            name = "Películas",
+            description = "Colección de películas",
+            imageUri = "android.resource://com.example.mediaexplorer/drawable/movies"
+        ),
+        Category(
+            id = "2",
+            name = "Series",
+            description = "Colección de series",
+            imageUri = "android.resource://com.example.mediaexplorer/drawable/series"
+        ),
+        Category(
+            id = "3",
+            name = "Anime",
+            description = "Colección de anime",
+            imageUri = "android.resource://com.example.mediaexplorer/drawable/anime"
+        )
+    )
+}

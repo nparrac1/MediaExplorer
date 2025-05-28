@@ -1,19 +1,18 @@
 package com.example.mediaexplorer.ui.theme.screens
 
-import android.widget.Toast
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
-import com.example.mediaexplorer.model.Category
-import com.example.mediaexplorer.R
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.res.stringResource
-
+import androidx.compose.ui.unit.dp
+import com.example.mediaexplorer.R
+import com.example.mediaexplorer.ui.theme.components.ImagePicker
+import com.example.mediaexplorer.ui.theme.components.CancelButton
+import com.example.mediaexplorer.ui.theme.components.SaveButton
+import com.example.mediaexplorer.model.Category
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,8 +20,9 @@ fun AddCategoryScreen(
     onSave: (Category) -> Unit,
     onCancel: () -> Unit
 ) {
-    var name by remember { mutableStateOf(TextFieldValue("")) }
-    val context = LocalContext.current
+    var name by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
     Scaffold(
         topBar = {
@@ -34,8 +34,7 @@ fun AddCategoryScreen(
                 .padding(padding)
                 .padding(16.dp)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedTextField(
                 value = name,
@@ -43,29 +42,44 @@ fun AddCategoryScreen(
                 label = { Text(stringResource(R.string.name_category)) },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(16.dp))
 
-            Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(
-                    onClick = {
-                        if (name.text.isBlank()) {
-                            Toast.makeText(context, context.getString(R.string.name_error), Toast.LENGTH_SHORT).show()
-                        } else {
-                            val newCategory = Category(
-                                id = System.currentTimeMillis().toString(),
-                                name = name.text,
-                                imageRes = R.drawable.default_category // imagen por defecto
-                            )
-                            onSave(newCategory)
-                        }
-                    }
-                ) {
-                    Text(stringResource(R.string.save))
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                OutlinedButton(onClick = onCancel) {
-                    Text(stringResource(R.string.cancel))
-                }
+            OutlinedTextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text(stringResource(R.string.description)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Text(
+                text = stringResource(R.string.category_cover),
+                style = MaterialTheme.typography.titleMedium
+            )
+            
+            ImagePicker(
+                onImageSelected = { uri ->
+                    selectedImageUri = uri
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                CancelButton(
+                    onClick = onCancel,
+                    modifier = Modifier.weight(1f)
+                )
+
+                SaveButton(
+                    name = name,
+                    description = description,
+                    selectedImageUri = selectedImageUri,
+                    onSave = onSave,
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
     }

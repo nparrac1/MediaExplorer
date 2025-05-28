@@ -1,7 +1,12 @@
 package com.example.mediaexplorer.model
-import androidx.annotation.DrawableRes
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "categories")
 data class Category(
+    @PrimaryKey
     val id: String,
     val name: String,
-    @DrawableRes val imageRes: Int
+    val description: String,
+    val imageUri: String
 )

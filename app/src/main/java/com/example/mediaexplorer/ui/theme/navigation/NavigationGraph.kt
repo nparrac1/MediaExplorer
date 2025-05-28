@@ -1,5 +1,6 @@
 package com.example.mediaexplorer.ui.theme.navigation
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -13,6 +14,7 @@ import com.example.mediaexplorer.ui.theme.screens.CategoryDetailScreen
 import com.example.mediaexplorer.ui.theme.screens.ContentDetailScreen
 import com.example.mediaexplorer.ui.theme.screens.MainScreen
 import com.example.mediaexplorer.viewmodel.CategoryViewModel
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun NavigationGraph(
@@ -41,7 +43,7 @@ fun NavigationGraph(
         composable("add_category") {
             AddCategoryScreen(
                 onSave = { newCategory ->
-                    categoryViewModel.addCategory(newCategory)
+                    categoryViewModel.addCategory(newCategory, Uri.parse(newCategory.imageUri))
                     navController.popBackStack()
                 },
                 onCancel = {
@@ -56,7 +58,8 @@ fun NavigationGraph(
             arguments = listOf(navArgument("categoryId") { type = NavType.StringType })
         ) { backStackEntry ->
             val categoryId = backStackEntry.arguments?.getString("categoryId")
-            val category = categoryViewModel.categories.find { it.id == categoryId }
+            val categories = categoryViewModel.categories.collectAsState().value
+            val category = categories.find { it.id == categoryId }
 
             if (category != null) {
                 CategoryDetailScreen(
@@ -70,20 +73,20 @@ fun NavigationGraph(
             }
         }
 
-        // NUEVA: Pantalla de detalle de un contenido audiovisual
+        // Pantalla de detalle de un contenido audiovisual
         composable(
             route = "content_detail/{contentId}",
             arguments = listOf(navArgument("contentId") { type = NavType.StringType })
         ) { backStackEntry ->
             val contentId = backStackEntry.arguments?.getString("contentId")
-            val contentItem = categoryViewModel.contents
-                .values.flatten()
-                .find { it.id == contentId }
+            val contents = categoryViewModel.contents.collectAsState().value
+            val contentItem = contents.values.flatten().find { it.id == contentId }
 
             if (contentItem != null) {
                 ContentDetailScreen(
-                    contentItem = contentItem,
-                    onBack = { navController.popBackStack() }
+                    content = contentItem,
+                    onDismiss = { navController.popBackStack() },
+                    viewModel = categoryViewModel
                 )
             }
         }

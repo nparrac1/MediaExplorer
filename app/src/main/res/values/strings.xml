@@ -1,18 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LessFlix</string>
     <string name="new_category">Nueva Categoría</string>
     <string name="add_category">Agregar categoría</string>
     <string name="name_category">Nombre de la categoría</string>
-    <string name="name_error">El nombre no puede estar vacío</string>
+    <string name="name_error">El nombre es requerido</string>
+    <string name="image_required">Se requiere una imagen</string>
+    <string name="category_cover">Imagen de portada</string>
     <string name="save">Guardar</string>
     <string name="cancel">Cancelar</string>
     <string name="back">Volver</string>
     <string name="title">Título</string>
     <string name="description">Descripción</string>
     <string name="add_content">Agregar contenido</string>
-    <string name="registered_content">Contenidos registrados</string>
+    <string name="registered_content">Contenido registrado</string>
     <string name="movies">Peliculas</string>
     <string name="series">Series</string>
     <string name="anime">Anime</string>
-
+    <string name="tipo">Tipo</string>
+    <string name="imagen">Imagen</string>
+    <string name="close">Cerrar</string>
+    <string name="edit_category">Editar categoría</string>
+    <string name="delete_category_confirmation">Eliminar categoría</string>
+    <string name="delete_category_message">¿Estás seguro de que deseas eliminar esta categoría? Esta acción no se puede deshacer.</string>
+    <string name="delete_content_confirmation">Eliminar contenido</string>
+    <string name="delete_content_message">¿Estás seguro de que deseas eliminar este contenido? Esta acción no se puede deshacer.</string>
+    <string name="delete">Eliminar</string>
+    <string name="edit">Editar</string>
+    <string name="edit_content">Editar contenido</string>
+    <string name="title_required">El título es requerido</string>
+    <string name="type_required">El tipo es requerido</string>
 </resources>
