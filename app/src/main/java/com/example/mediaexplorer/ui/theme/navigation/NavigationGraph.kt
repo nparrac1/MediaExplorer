@@ -13,6 +13,15 @@ import com.example.mediaexplorer.ui.theme.screens.CategoryDetailScreen
 import com.example.mediaexplorer.ui.theme.screens.ContentDetailScreen
 import com.example.mediaexplorer.ui.theme.screens.MainScreen
 import com.example.mediaexplorer.viewmodel.CategoryViewModel
+import com.example.mediaexplorer.ui.theme.screens.CategoryTestScreen
+import com.example.mediaexplorer.viewmodel.CategoryRoomViewModel
+import android.app.Application
+import androidx.compose.ui.platform.LocalContext
+import com.example.mediaexplorer.viewmodel.CategoryRoomViewModelFactory
+
+
+
+
 
 @Composable
 fun NavigationGraph(
@@ -24,6 +33,15 @@ fun NavigationGraph(
         navController = navController,
         startDestination = "main"
     ) {
+
+        composable("test_category") {
+            val context = LocalContext.current
+            val viewModel: CategoryRoomViewModel = viewModel(
+                factory = CategoryRoomViewModelFactory(context.applicationContext as Application)
+            )
+            CategoryTestScreen(viewModel = viewModel)
+        }
+
         // Pantalla principal
         composable("main") {
             MainScreen(
@@ -86,6 +104,11 @@ fun NavigationGraph(
                     onBack = { navController.popBackStack() }
                 )
             }
+        }
+
+        composable("test_category") {
+            val roomViewModel: CategoryRoomViewModel = viewModel()
+            CategoryTestScreen(viewModel = roomViewModel)
         }
     }
 }
