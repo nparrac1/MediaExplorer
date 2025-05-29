@@ -14,10 +14,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
@@ -25,97 +30,157 @@ import com.example.mediaexplorer.R
 import com.example.mediaexplorer.model.ContentItem
 import com.example.mediaexplorer.util.ImageUtils
 import com.example.mediaexplorer.viewmodel.CategoryViewModel
+import androidx.compose.foundation.background
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun ContentDetailScreen(
     content: ContentItem,
-    onDismiss: () -> Unit,
-    viewModel: CategoryViewModel
+    viewModel: CategoryViewModel,
+    onDismiss: () -> Unit
 ) {
     var showEditDialog by remember { mutableStateOf(false) }
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val isTablet = screenWidth >= 600.dp
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.9f),
+                .fillMaxHeight(if (isTablet) 0.8f else 0.9f),
             shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surface
+            color = Color.Transparent
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = content.title,
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                    Row {
-                        IconButton(onClick = { showEditDialog = true }) {
-                            Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.edit))
-                        }
-                        IconButton(onClick = onDismiss) {
-                            Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
-                        }
-                    }
-                }
+            Box(modifier = Modifier.fillMaxSize()) {
+                // Imagen de fondo
+                Image(
+                    painter = rememberAsyncImagePainter(viewModel.getImageUri(content.imagen)),
+                    contentDescription = content.title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Imagen del contenido
+                // Gradiente oscuro para mejorar la legibilidad
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.Black.copy(alpha = 0.3f),
+                                    Color.Black.copy(alpha = 0.8f)
+                                )
+                            )
+                        )
+                )
+
+                // Contenido
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    val imageUri = viewModel.getImageUri(content.imagen)
-                    if (ImageUtils.isResourceUri(content.imagen)) {
-                        Image(
-                            painter = painterResource(id = R.drawable.movies),
-                            contentDescription = content.title,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
+                    // Botones de acción
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        IconButton(
+                            onClick = { showEditDialog = true },
+                            modifier = Modifier.background(
+                                color = Color.White.copy(alpha = 0.2f),
+                                shape = MaterialTheme.shapes.medium
+                            )
+                        ) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = stringResource(R.string.edit),
+                                tint = Color.White
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        IconButton(
+                            onClick = onDismiss,
+                            modifier = Modifier.background(
+                                color = Color.White.copy(alpha = 0.2f),
+                                shape = MaterialTheme.shapes.medium
+                            )
+                        ) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = stringResource(R.string.close),
+                                tint = Color.White
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // Título
+                    Text(
+                        text = content.title,
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Tipo de contenido
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White.copy(alpha = 0.2f)
                         )
-                    } else {
-                        Image(
-                            painter = rememberAsyncImagePainter(imageUri),
-                            contentDescription = content.title,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.tipo),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color.White.copy(alpha = 0.7f)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = content.tipo,
+                                style = MaterialTheme.typography.titleLarge,
+                                color = Color.White
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Descripción
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White.copy(alpha = 0.2f)
                         )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.description),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color.White.copy(alpha = 0.7f)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = content.description,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White
+                            )
+                        }
                     }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Tipo de contenido
-                Text(
-                    text = stringResource(R.string.tipo),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = content.tipo,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Descripción
-                Text(
-                    text = stringResource(R.string.description),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = content.description,
-                    style = MaterialTheme.typography.bodyLarge
-                )
             }
         }
     }
@@ -147,7 +212,6 @@ fun EditContentDialog(
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var showTitleError by remember { mutableStateOf(false) }
     var showTypeError by remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()

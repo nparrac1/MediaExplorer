@@ -112,8 +112,8 @@ fun MainScreenContent() {
         }
         composable("add_category") {
             AddCategoryScreen(
-                onSave = { category ->
-                    viewModel.addCategory(category, null)
+                onSave = { category, imageUri ->
+                    viewModel.addCategory(category, imageUri)
                     navController.popBackStack()
                 },
                 onCancel = {

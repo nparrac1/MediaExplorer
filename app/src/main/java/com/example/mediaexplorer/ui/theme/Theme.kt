@@ -30,7 +30,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFFE50914), // Rojo Netflix
+    primary = Color(0xFF9F4C50), // Rojo Netflix
     secondary = Color(0xFFB81D24),
     tertiary = Color(0xFF221F1F),
     background = Color(0xFFF5F5F5),

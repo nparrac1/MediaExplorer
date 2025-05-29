@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -27,52 +28,67 @@ fun CategoryCard(
     category: Category,
     onClick: () -> Unit
 ) {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val isTablet = screenWidth >= 600.dp
+
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(0.75f)
+            .height(if (isTablet) 240.dp else 180.dp)
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Imagen de fondo de la categoría
             Image(
                 painter = rememberAsyncImagePainter(Uri.parse(category.imageUri)),
                 contentDescription = category.name,
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.FillBounds
             )
             
-            // Gradiente oscuro en la parte inferior
+            // Contenedor de texto con fondo semitransparente
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(80.dp)
                     .align(Alignment.BottomCenter)
                     .background(
-                        brush = Brush.verticalGradient(
+                        Brush.verticalGradient(
                             colors = listOf(
                                 Color.Transparent,
                                 Color.Black.copy(alpha = 0.7f)
                             )
                         )
                     )
-            )
-            
-            Text(
-                text = category.name,
-                style = MaterialTheme.typography.titleLarge,
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp)
-            )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = category.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White,
+                        textAlign = TextAlign.Center
+                    )
+                    
+                    Spacer(modifier = Modifier.height(4.dp))
+                    
+                    Text(
+                        text = category.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.9f),
+                        textAlign = TextAlign.Center,
+                        maxLines = 2
+                    )
+                }
+            }
         }
     }
 }

@@ -42,8 +42,8 @@ fun NavigationGraph(
         // Formulario para nueva categoría
         composable("add_category") {
             AddCategoryScreen(
-                onSave = { newCategory ->
-                    categoryViewModel.addCategory(newCategory, Uri.parse(newCategory.imageUri))
+                onSave = { newCategory, imageUri ->
+                    categoryViewModel.addCategory(newCategory, imageUri)
                     navController.popBackStack()
                 },
                 onCancel = {
@@ -85,8 +85,8 @@ fun NavigationGraph(
             if (contentItem != null) {
                 ContentDetailScreen(
                     content = contentItem,
-                    onDismiss = { navController.popBackStack() },
-                    viewModel = categoryViewModel
+                    viewModel = categoryViewModel,
+                    onDismiss = { navController.popBackStack() }
                 )
             }
         }

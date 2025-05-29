@@ -31,7 +31,7 @@ fun SaveButton(
     name: String,
     description: String,
     selectedImageUri: Uri?,
-    onSave: (Category) -> Unit,
+    onSave: (Category, Uri?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -53,8 +53,9 @@ fun SaveButton(
                     id = java.util.UUID.randomUUID().toString(),
                     name = name,
                     description = description,
-                    imageUri = selectedImageUri.toString()
-                )
+                    imageUri = "" // La URI se manejará en el ViewModel
+                ),
+                selectedImageUri
             )
         },
         modifier = modifier

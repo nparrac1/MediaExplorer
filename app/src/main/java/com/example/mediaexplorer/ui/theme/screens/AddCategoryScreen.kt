@@ -17,7 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddCategoryScreen(
-    onSave: (Category) -> Unit,
+    onSave: (Category, Uri?) -> Unit,
     onCancel: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
