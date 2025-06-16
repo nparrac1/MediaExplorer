@@ -5,76 +5,56 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Content;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class ContentController extends Controller
 {
-    public function index(): JsonResponse
+    public function store(Request $request)
     {
-        $contents = Content::with('category')->get();
-        return response()->json($contents);
-    }
-
-    public function show($id): JsonResponse
-    {
-        $content = Content::with('category')->find($id);
-        
-        if (!$content) {
-            return response()->json(['error' => 'Content not found'], 404);
-        }
-        
-        return response()->json($content);
-    }
-
-    public function store(Request $request): JsonResponse
-    {
-        $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'tipo' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'imagen' => 'nullable|string',
-            'categoriaId' => 'required|exists:categories,id'
+            'tipo' => 'required|string',
+            'description' => 'required|string',
+            'imagen' => 'required|string',
+            'categoria_id' => 'required|exists:categories,id'
         ]);
 
-        $content = Content::create($request->all());
-        return response()->json($content, 201);
-    }
-
-    public function update(Request $request, $id): JsonResponse
-    {
-        $content = Content::find($id);
-        
-        if (!$content) {
-            return response()->json(['error' => 'Content not found'], 404);
+        // Si la imagen viene como base64, guárdala
+        if (str_starts_with($validated['imagen'], 'data:image')) {
+            $image = Image::make($validated['imagen']);
+            $imagePath = 'images/' . time() . '.jpg';
+            Storage::disk('public')->put($imagePath, $image->encode());
+            $validated['imagen'] = Storage::url($imagePath);
         }
 
-        $request->validate([
+        $content = new Content($validated);
+        $content->id = Str::uuid()->toString();
+        $content->save();
+
+        return $content;
+    }
+
+    public function update(Request $request, Content $content)
+    {
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'tipo' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'imagen' => 'nullable|string',
-            'categoriaId' => 'required|exists:categories,id'
+            'tipo' => 'required|string',
+            'description' => 'required|string',
+            'imagen' => 'required|string',
+            'categoria_id' => 'required|exists:categories,id'
         ]);
 
-        $content->update($request->all());
-        return response()->json($content);
-    }
-
-    public function destroy($id): JsonResponse
-    {
-        $content = Content::find($id);
-        
-        if (!$content) {
-            return response()->json(['error' => 'Content not found'], 404);
+        // Si la imagen viene como base64, guárdala
+        if (str_starts_with($validated['imagen'], 'data:image')) {
+            $image = Image::make($validated['imagen']);
+            $imagePath = 'images/' . time() . '.jpg';
+            Storage::disk('public')->put($imagePath, $image->encode());
+            $validated['imagen'] = Storage::url($imagePath);
         }
 
-        $content->delete();
-        return response()->json(['message' => 'Content deleted successfully']);
-    }
-
-    public function getByCategory($categoryId): JsonResponse
-    {
-        $contents = Content::where('categoriaId', $categoryId)->get();
-        return response()->json($contents);
+        $content->update($validated);
+        return $content;
     }
 }

@@ -6,18 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    public function up()
     {
         Schema::create('categories', function (Blueprint $table) {
-            $table->id();
+            $table->string('id')->primary(); // Cambiado a string para coincidir con la app
             $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('imageUri')->nullable();
+            $table->text('description');
+            $table->string('image_uri');
             $table->timestamps();
         });
     }
 
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('categories');
     }

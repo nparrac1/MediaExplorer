@@ -6,22 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    public function up()
     {
         Schema::create('contents', function (Blueprint $table) {
-            $table->id();
+            $table->string('id')->primary(); // Cambiado a string para coincidir con la app
             $table->string('title');
             $table->string('tipo');
-            $table->text('description')->nullable();
-            $table->string('imagen')->nullable();
-            $table->unsignedBigInteger('categoriaId');
+            $table->text('description');
+            $table->string('imagen');
+            $table->string('categoria_id');
             $table->timestamps();
-            
-            $table->foreign('categoriaId')->references('id')->on('categories')->onDelete('cascade');
+
+            $table->foreign('categoria_id')
+                  ->references('id')
+                  ->on('categories')
+                  ->onDelete('cascade');
         });
     }
 
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('contents');
     }
