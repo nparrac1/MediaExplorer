@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 
+
 class CategoryController extends Controller
 {
     public function index()
@@ -16,6 +17,15 @@ class CategoryController extends Controller
         try {
             $categories = Category::all();
             return response()->json($categories, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function show(Category $category)
+    {
+        try {
+            return response()->json($category, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -30,6 +40,7 @@ class CategoryController extends Controller
                 'image_uri' => 'required|string'
             ]);
 
+            // Procesar imagen base64 si es necesario
             if (str_starts_with($validated['image_uri'], 'data:image')) {
                 $image = Image::make($validated['image_uri']);
                 $imagePath = 'images/' . time() . '.jpg';
@@ -49,21 +60,35 @@ class CategoryController extends Controller
 
     public function update(Request $request, Category $category)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'image_uri' => 'required|string'
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'required|string',
+                'image_uri' => 'required|string'
+            ]);
 
-        // Si la imagen viene como base64, guárdala
-        if (str_starts_with($validated['image_uri'], 'data:image')) {
-            $image = Image::make($validated['image_uri']);
-            $imagePath = 'images/' . time() . '.jpg';
-            Storage::disk('public')->put($imagePath, $image->encode());
-            $validated['image_uri'] = Storage::url($imagePath);
+            // Procesar imagen base64 si es necesario
+            if (str_starts_with($validated['image_uri'], 'data:image')) {
+                $image = Image::make($validated['image_uri']);
+                $imagePath = 'images/' . time() . '.jpg';
+                Storage::disk('public')->put($imagePath, $image->encode());
+                $validated['image_uri'] = Storage::url($imagePath);
+            }
+
+            $category->update($validated);
+            return response()->json($category, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
 
-        $category->update($validated);
-        return $category;
+    public function destroy(Category $category)
+    {
+        try {
+            $category->delete();
+            return response()->json(['message' => 'Category deleted successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }
